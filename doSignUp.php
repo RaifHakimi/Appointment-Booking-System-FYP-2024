@@ -7,8 +7,8 @@ $msg = "";
 include "dbFunctions.php";
 
 echo "<pre>";
-    print_r($_POST);  // This will show the data received from the form
-    echo "</pre>";
+print_r($_POST);  // This will show the data received from the form
+echo "</pre>";
 
 if (!empty($_POST['firstName']) && !empty($_POST['lastName']) && !empty($_POST['gender']) && !empty($_POST['phoneNumber']) && !empty($_POST['email']) && !empty($_POST['password']) && !empty($_POST['day']) && !empty($_POST['month']) && !empty($_POST['year'])) {
     //username
@@ -33,6 +33,8 @@ if (!empty($_POST['firstName']) && !empty($_POST['lastName']) && !empty($_POST['
     $month = $_POST['month'];
     $year = $_POST['year'];
 
+    $role = "Patient";
+
 
 
     // Validate and format the date
@@ -44,23 +46,40 @@ if (!empty($_POST['firstName']) && !empty($_POST['lastName']) && !empty($_POST['
 
 
 
-    
 
 
 
-    
+
+
 
 
     if ($email) {
-        $stmt = $link->prepare("INSERT INTO patientinfo (username, gender, phonenumber, email, password, dob) VALUES (?, ?, ?, ?, ?, ?)");  // Changed 'name' to 'phoneNumber'
-        $stmt->bind_param("ssssss", $userName,$gender, $phoneNumber, $email,$password, $birthDate);  // Changed '$name' to '$phoneNumber'
+        $stmt = $link->prepare("INSERT INTO users ( username, gender, phonenumber, email, password, dob, role) VALUES (?, ?, ?, ?, ?, ? , ?)");  // Changed 'name' to 'phoneNumber'
+        $stmt->bind_param("sssssss", $userName, $gender, $phoneNumber, $email, $password, $birthDate, $role);  // Changed '$name' to '$phoneNumber'
 
         $status = $stmt->execute();
 
         if ($status) {
             $lastInsertedId = $stmt->insert_id;
             $msg = "Registered successfully.";
-            echo $msg;
+
+            $query = "SELECT * FROM users WHERE user_id = ?";
+            $fetchStmt = $link->prepare($query);
+            $fetchStmt->bind_param("i", $lastInsertedId);
+            $fetchStmt->execute();
+            $result = $fetchStmt->get_result();
+            $user = $result->fetch_assoc();
+
+            // Set session variables
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['email'] = $user['email'];
+            $_SESSION['role'] = $user['role'];
+            echo "<script>
+                    alert('$msg');
+                    window.open('newpage.php', '_blank');  // Opens new tab with newpage.php
+                    window.location.href = 'dashboard.php';  // Redirects to welcome.php in the same tab
+                  </script>";
         } else {
             $msg = "Registration failed.";
         }
@@ -89,7 +108,7 @@ mysqli_close($link);
     echo $msg;
     echo $firstName;
     echo $lastName;
-    
+
     echo $gender;
     echo $password;
     echo $email;

@@ -17,7 +17,7 @@ if (isset($_POST['phonenumber'])) {
     include "dbFunctions.php";
 
     // Match the username and retrieve the hashed password from the database
-    $query = "SELECT ID, username, password FROM patientinfo WHERE phonenumber = ?";
+    $query = "SELECT user_id, username, password FROM users WHERE phonenumber = ?";
     $stmt = $link->prepare($query);
     $stmt->bind_param("s", $entered_username);
     $stmt->execute();
@@ -30,7 +30,7 @@ if (isset($_POST['phonenumber'])) {
         // Verify the entered password against the stored hashed password
         if (password_verify($entered_password, $stored_hashed_password)) {
             // Password is correct; store user info in session
-            $_SESSION['user_id'] = $row['ID'];
+            $_SESSION['user_id'] = $row['user_id'];
             $_SESSION['username'] = $row['username'];
             $msg = "Login is successful!";
 

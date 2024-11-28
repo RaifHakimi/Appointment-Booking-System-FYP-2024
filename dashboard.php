@@ -2,6 +2,11 @@
 <?php
 
 session_start();
+
+/**echo "<pre>";
+print_r($_SESSION); // Outputs session data
+echo "</pre>";
+**/
 ?>
 
 <head>
@@ -68,7 +73,7 @@ session_start();
             <div class="separator"></div>
             <a href="medication.php">Medication</a>
         </div>
-        <a href="#" class="button">
+        <a href="bookAppt.php" class="button">
             <i class="icon">📅</i> Book Appointment
         </a>
         <i class="settings">⚙️</i>
