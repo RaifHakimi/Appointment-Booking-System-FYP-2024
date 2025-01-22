@@ -87,11 +87,11 @@ $users = [
 
 // Dummy appointments table
 $appointments = [
-    ["id" => 1, "date" => date("Y-m-d"), "time" => "09:00:00", "user_id" => 1, "reason" => "Routine checkup"],
-    ["id" => 2, "date" => date("Y-m-d"), "time" => "10:30:00", "user_id" => 2, "reason" => "Flu symptoms"],
-    ["id" => 3, "date" => date("Y-m-d"), "time" => "11:45:00", "user_id" => 3, "reason" => "Back pain"],
-    ["id" => 4, "date" => date("Y-m-d"), "time" => "14:00:00", "user_id" => 4, "reason" => "Follow-up consultation"],
-    ["id" => 5, "date" => date("Y-m-d"), "time" => "16:30:00", "user_id" => 5, "reason" => "Headache evaluation"]
+    ["id" => 1, "date" => "2025-01-22", "time" => "09:00:00", "user_id" => 1, "reason" => "Routine checkup"],
+    ["id" => 2, "date" => "2025-01-22", "time" => "10:30:00", "user_id" => 2, "reason" => "Flu symptoms"],
+    ["id" => 3, "date" => "2025-01-23", "time" => "11:45:00", "user_id" => 3, "reason" => "Back pain"],
+    ["id" => 4, "date" => "2025-01-24", "time" => "14:00:00", "user_id" => 4, "reason" => "Follow-up consultation"],
+    ["id" => 5, "date" => "2025-01-22", "time" => "16:30:00", "user_id" => 5, "reason" => "Headache evaluation"]
 ];
 
 function getUsernameById($users, $user_id) {
@@ -103,10 +103,14 @@ function getUsernameById($users, $user_id) {
     return "Unknown"; // Return "Unknown" if user_id is not found
 }
 
-        if (empty($appointments)) {
-            echo "<p>No appointments for today.</p>";
-        } else {
-            foreach ($appointments as $app) {
+$appointments_today = array_filter($appointments, function($app) {
+    return $app['date'] === date("Y-m-d");
+});
+
+if (empty($appointments_today)) {
+    echo "<p>No appointments for today.</p>";
+} else {
+    foreach ($appointments_today as $app) {
                 // Fetch the patient's username based on the user_id
                 //$stmt = $conn->prepare("SELECT username FROM users WHERE id = :user_id");
                 //$stmt->bindParam(':user_id', $app['user_id']);
