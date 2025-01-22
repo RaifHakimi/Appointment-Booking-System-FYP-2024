@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+
+
 <html lang="en">
 
 <head>
@@ -16,6 +18,11 @@
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             overflow: hidden;
+        }
+
+        .go-back {
+            color: #8A3C3C;
+            font-size: medium;
         }
 
         /* Full-width red banner */
@@ -183,6 +190,9 @@
 
 
             </form>
+            <div class="d-flex justify-content-center mt-4">
+                <a href="index.php" class="go-back" >Go back</a>
+            </div>
         </div>
     </div>
 

@@ -2,6 +2,14 @@
 include 'dbFunctions.php';
 session_start();
 
+if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] === null) {
+  // Display an alert and redirect
+  echo "<script>
+      alert('You must log in to access this page.');
+      window.location.href = 'index.php';
+  </script>";
+  exit(); // Ensure no further code is executed
+}
 
 
 $user_id = $_SESSION['user_id'];

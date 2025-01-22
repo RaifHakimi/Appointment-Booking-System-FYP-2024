@@ -7,6 +7,15 @@ session_start();
 print_r($_SESSION); // Outputs session data
 echo "</pre>";
 **/
+if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] === null) {
+    // Display an alert and redirect
+    echo "<script>
+        alert('You must log in to access this page.');
+        window.location.href = 'index.php';
+    </script>";
+    exit(); // Ensure no further code is executed
+}
+
 ?>
 
 <head>
@@ -65,6 +74,7 @@ echo "</pre>";
 
     <!-- Navigation -->
     <div class="navbar">
+
         <div class="logo">LOGO</div>
         <div class="nav-links">
             <a href="dashboard.php" class="active">Home</a>
@@ -76,7 +86,9 @@ echo "</pre>";
         <a href="bookAppt.php" class="button">
             <i class="icon">📅</i> Book Appointment
         </a>
+        <a href="settings.php">
         <i class="settings">⚙️</i>
+        </a>
     </div>
 
     <!-- Main Content -->
