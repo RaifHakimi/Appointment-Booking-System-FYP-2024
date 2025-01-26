@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <?php
 session_start();
-//include("dbFunctions.php");
+include("dbFunctions.php");
 
-// Fetch today's appointments
+// Fetch today's appointments using MySQLi
 $date = date("Y-m-d"); // Get today's date
-//$stmt = $conn->prepare("SELECT * FROM appointments WHERE date = :date");
-//$stmt->bindParam(':date', $date);
-//$stmt->execute();
-//$appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$query = "SELECT * FROM appointment WHERE appt_date = '$date'";
+$result = mysqli_query($link, $query);
+
+if ($result) {
+    $appointments = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    // Do something with the appointments
+} else {
+    die("Query failed: " . mysqli_error($link));
+}
+// only viewable if doctor role yet to be coded
 ?>
 <html lang="en">
 
@@ -77,76 +83,62 @@ $date = date("Y-m-d"); // Get today's date
     <div id="appointments-list">
         <?php
         // Dummy users table
-$users = [
-    ["id" => 1, "username" => "johndoe"],
-    ["id" => 2, "username" => "janesmith"],
-    ["id" => 3, "username" => "emilydavis"],
-    ["id" => 4, "username" => "michaelbrown"],
-    ["id" => 5, "username" => "sarahwilson"]
-];
 
-// Dummy appointments table
-$appointments = [
-    ["id" => 1, "date" => "2025-01-22", "time" => "09:00:00", "user_id" => 1, "reason" => "Routine checkup"],
-    ["id" => 2, "date" => "2025-01-22", "time" => "10:30:00", "user_id" => 2, "reason" => "Flu symptoms"],
-    ["id" => 3, "date" => "2025-01-23", "time" => "11:45:00", "user_id" => 3, "reason" => "Back pain"],
-    ["id" => 4, "date" => "2025-01-24", "time" => "14:00:00", "user_id" => 4, "reason" => "Follow-up consultation"],
-    ["id" => 5, "date" => "2025-01-22", "time" => "16:30:00", "user_id" => 5, "reason" => "Headache evaluation"]
-];
 
-function getUsernameById($users, $user_id) {
-    foreach ($users as $user) {
-        if ($user['id'] === $user_id) {
-            return $user['username'];
-        }
-    }
-    return "Unknown"; // Return "Unknown" if user_id is not found
-}
+
 
 $appointments_today = array_filter($appointments, function($app) {
-    return $app['date'] === date("Y-m-d");
+    return $app['appt_date'] === date("Y-m-d");
 });
 
 if (empty($appointments_today)) {
     echo "<p>No appointments for today.</p>";
 } else {
     foreach ($appointments_today as $app) {
-                // Fetch the patient's username based on the user_id
-                //$stmt = $conn->prepare("SELECT username FROM users WHERE id = :user_id");
-                //$stmt->bindParam(':user_id', $app['user_id']);
-                //$stmt->execute();
-                //$user = $stmt->fetch(PDO::FETCH_ASSOC);
-                //$username = $user['username'];
+                if (!isset($link)) {
+    include("dbFunctions.php"); // Ensure this file sets up $link properly
+}
 
-                // Filter by today's date
-    if ($app['date'] === date("Y-m-d")) {
-        $username = getUsernameById($users, $app['user_id']);
+// Query to fetch user data
+$user_id = 1; // Example user ID
+$query = "SELECT username FROM users WHERE user_id = $user_id";
+$result = mysqli_query($link, $query);
+
+if ($result) {
+    $user = mysqli_fetch_assoc($result); // Fetch a single row
+    $username = $user['username']; // Bind the username to the variable
+} else {
+    die("Query failed: " . mysqli_error($link));
+}
+
+                
+        
         
                 echo "
-                </div>
-              <div class='container mt-4'>
-                <!-- Appointment Cards -->
-                <div class='appointment-card d-flex border rounded p-3 mb-3'>
-                  <div class='date-section text-center me-3'>
-                            <div>" . date("m", strtotime($app['date'])) . "<br>" . date("Y", strtotime($app['date'])) . "</div>
-                            <div class='fs-1'>" . date("d", strtotime($app['date'])) . "</div>
-                            <div>" . strtoupper(date("D", strtotime($app['date']))) . "</div>
-                        </div>
-                        <div class='flex-grow-1'>
-                            <h5>Doctor Consult</h5>
-                            <p>Booked for <span class='text-muted'>{$username}</span></p>
-                            <p class='text-danger'>{$app['time']}</p>
-                        </div>
-                        <div class='d-flex justify-content-center align-items-center'>
-                            
-                            <a href='markComplete2.php?appointment_id={$app['id']}' class='btn btn-custom'>Medicine/Mark as Completed</a>
-                        </div>
-                    </div>
-                </div>
-                ";
+    </div>
+    <div class='container mt-4'>
+        <!-- Appointment Cards -->
+        <div class='appointment-card d-flex border rounded p-3 mb-3'>
+            <div class='date-section text-center me-3'>
+                <div>" . date("m", strtotime($app['appt_date'])) . "<br>" . date("Y", strtotime($app['appt_date'])) . "</div>
+                <div class='fs-1'>" . date("d", strtotime($app['appt_date'])) . "</div>
+                <div>" . strtoupper(date("D", strtotime($app['appt_date']))) . "</div>
+            </div>
+            <div class='flex-grow-1'>
+                <h5>Doctor Consult</h5>
+                <p>Booked for <span class='text-muted'>{$username}</span></p>
+                <p class='text-danger'>{$app['appt_time']}</p>
+            </div>
+            <div class='d-flex flex-column'>
+                <a href='details.php?appt_id={$app['appt_id']}&user_id={$app['user_id']}' class='btn btn-custom mb-3'>Details</a>
+                <a href='markComplete2.php?appt_id={$app['appt_id']}' class='btn btn-custom'>Medicine/Mark as Completed</a>
+            </div>
+        </div>
+    </div>
+";
             }
         }
-        }
+        
         ?>
     </div>
 </div>
