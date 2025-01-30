@@ -1,4 +1,8 @@
 <?php
+/**
+ * File created by Raif
+ */
+
 include 'dbFunctions.php';
 session_start();
 

@@ -1,6 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
+
+<?php
+include 'dbFunctions.php';
+session_start();
+
+if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] === null) {
+    // Redirect if user is not logged in
+    echo "<script>
+        alert('You must log in to access this page.');
+        window.location.href = 'index.php';
+    </script>";
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+
+try {
+    $sql = "SELECT * FROM users WHERE user_id = ?";
+    $stmt = $link->prepare($sql);
+    if (!$stmt) {
+        throw new Exception("Failed to prepare statement: " . $link->error);
+    }
+
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        // Fetch user data (assuming single row for the user)
+        $row = $result->fetch_assoc();
+
+        // Extract specific fields
+        $username = htmlspecialchars($row['username'] ?? '');
+        $gender = htmlspecialchars($row['gender'] ?? '');
+        $phonenumber = htmlspecialchars($row['phonenumber'] ?? '');
+        $email = htmlspecialchars($row['email'] ?? '');
+
+        $password = htmlspecialchars($row['password'] ?? '');
+        
+    } else {
+        echo "<p>No user found with ID: $user_id</p>";
+        $firstName = $lastName = ''; // Default empty values
+    }
+} catch (Exception $e) {
+    echo "<p>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
+    $firstName = $lastName = ''; // Default empty values
+}
+
+// Close the statement and connection
+$stmt->close();
+$link->close();
+?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -133,32 +187,50 @@
 
                 <!-- Input fields -->
                 <div class="row mb-3 g-2">
-                    <div class="col-12 col-md-6">
-                        <label for="firstName" class="form-label text-start d-block">First Name*</label>
-                        <input type="text" class="form-control text-border" id="firstName" name="firstName" placeholder="Enter first name" required readonly>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label for="lastName" class="form-label text-start d-block">Last Name*</label>
-                        <input type="text" class="form-control text-border" id="lastName" name="lastName" placeholder="Enter last name" required readonly>
-                    </div>
+
+                    <label for="firstName" class="form-label text-start d-block">Name</label>
+                    <input type="text" class="form-control text-border" id="firstName" name="firstName" placeholder="Enter first name" value="<?php echo $username; ?>" required readonly>
+
+
                 </div>
 
                 <!-- Gender Display (Non-editable) -->
                 <div class="mb-3">
-                    <label class="form-label text-start">Gender*</label>
-                    <input type="text" class="form-control text-border" id="gender" name="gender" required readonly>
+                    <label class="form-label text-start d-block">Gender</label>
+                    <input type="text" class="form-control text-border" id="gender" name="gender" value="<?php echo $gender; ?>" required readonly>
                 </div>
 
                 <!-- Phone Number -->
                 <div class="mb-3">
-                    <label for="phoneNumber" class="form-label text-start">Phone Number*</label>
-                    <input type="text" class="form-control text-border" id="phoneNumber" name="phoneNumber" placeholder="Enter phone number" required readonly>
+                    <label for="phoneNumber" class="form-label text-start d-block">Phone Number</label>
+                    <input type="text" class="form-control text-border" id="phoneNumber" name="phoneNumber" placeholder="Enter phone number" value="<?php echo $phonenumber; ?>" required readonly>
                 </div>
 
                 <!-- Email -->
                 <div class="mb-3">
-                    <label for="email" class="form-label text-start">Email*</label>
-                    <input type="text" class="form-control text-border" id="email" name="email" placeholder="Enter email" required readonly>
+                    <label for="email" class="form-label text-start d-block">Email</label>
+                    <input type="text" class="form-control text-border" id="email" name="email" placeholder="Enter email" value="<?php echo $email; ?>" required readonly>
+                </div>
+
+
+                <label for="email" class="form-label text-start d-block">Password</label>
+                <div class="d-flex align-items-center">
+                    <input
+                        type="password"
+                        class="form-control text-border flex-grow-1 me-2"
+                        id="password"
+                        name="password"
+                        placeholder="Enter password"
+                        value="<?php echo $password; ?>"
+                        required
+                        readonly>
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        id="togglePassword"
+                        style="flex: 0 0 10%;">
+                        Show
+                    </button>
                 </div>
             </div>
         </div>
@@ -204,7 +276,7 @@
             const inputs = document.querySelectorAll('input, select');
             inputs.forEach(input => {
                 // Only enable the fields that are not gender
-                
+
 
                 if (input.id !== 'gender') {
                     input.readOnly = !enable;
@@ -228,6 +300,19 @@
             const genderFromDB = "Male"; // Simulate pulling this value from the database
             document.getElementById('gender').value = genderFromDB;
         }
+    </script>
+    <script>
+        const passwordField = document.getElementById('password');
+        const togglePasswordButton = document.getElementById('togglePassword');
+
+        togglePasswordButton.addEventListener('click', () => {
+            // Toggle password visibility
+            const type = passwordField.type === 'password' ? 'text' : 'password';
+            passwordField.type = type;
+
+            // Update button text
+            togglePasswordButton.textContent = type === 'password' ? 'Show' : 'Hide';
+        });
     </script>
 
 
