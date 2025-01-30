@@ -3,121 +3,145 @@
 session_start();
 include("dbFunctions.php");
 
-// Fetch today's appointments
+// Fetch today's appointments using MySQLi
 $date = date("Y-m-d"); // Get today's date
-$stmt = $link->prepare("SELECT * FROM appointment WHERE appt_date = ?");
-$stmt->bind_param('s', $date);
-$stmt->execute();
-$appointments = $stmt->get_result()
+$query = "SELECT * FROM appointment WHERE appt_date = '$date'";
+$result = mysqli_query($link, $query);
+
+if ($result) {
+    $appointments = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    // Do something with the appointments
+} else {
+    die("Query failed: " . mysqli_error($link));
+}
+// only viewable if doctor role yet to be coded
 ?>
-<html>
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appointment Schedule</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .appointment-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            
-            background-color: white;
-        }
+<html lang="en">
 
-        .date-section {
-            font-weight: bold;
-            color: red;
-        }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doc Schedule</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .appointment-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #fff;
+    }
 
-        .btn-custom {
-            border: 1px solid red;
-            color: red;
-        }
+    .date-section {
+      font-weight: bold;
+      color: black;
+    }
 
-        .btn-custom:hover {
-            background-color: red;
-            color: white;
-        }
+    .day-sect {
+      font-weight: bold;
+      color: red;
+      
+    }
 
-        .nav-link.active {
-            font-weight: bold;
-            color: red !important;
-        }
-
-        .btn-custom {
+    .btn-custom {
       border: 1px solid red;
       color: red;
     }
+
     .btn-custom:hover {
       background-color: red;
       color: white;
     }
 
-        .color-bar-wrapper {
-            background: linear-gradient(to right, grey, grey);
-            /* Left-to-right color gradient */
-            padding: 5px;
-            /* Spacing to show the color bar around the card */
-            border-radius: 12px;
-            /* Rounded corners for the color bar */
-            position: relative;
-        }
-        
-        
-    </style>
-        
-    </head>
-    <body>
-        <!-- Navigation -->
-    <div class="navbar">
-        <div class="logo">LOGO</div>
-        <div class="nav-links">
-            
-            
-            <a href="appointment.php">Appointments</a>
-            <div class="separator"></div>
-            <a href="medication.php">Medication</a>
-        </div>
-        </div>
-        
-        <i class="settings">⚙️</i>
+    .nav-link.active {
+      font-weight: bold;
+      color: red !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <div class="navbar">
+    <div class="logo">LOGO</div>
+    <div class="nav-links">
+      <a href="dashboard.php">Home</a>
+      <div class="separator"></div>
+      <a href="#" class="active">Appointments</a>
+      <div class="separator"></div>
+      <a href="#">Medication</a>
+    </div>
+    <a href="bookAppt.php" class="button">
+      <i class="icon">📅</i> Book Appointment
+    </a>
+    <i class="settings">⚙️</i>
+  </div>
     <div class="container mt-5">
     <h3>Appointments for Today</h3>
     <div id="appointments-list">
         <?php
-        if (empty($appointments)) {
+        // Dummy users table
+
+
+
+
+$appointments_today = array_filter($appointments, function($app) {
+    return $app['appt_date'] === date("Y-m-d");
+});
+
+if (empty($appointments_today)) {
     echo "<p>No appointments for today.</p>";
 } else {
-    foreach ($appointments as $app) {
-        echo "
-        <div class='appointment-card color-bar-wrapper'>
-            <div class='d-flex'>
-                <div class='date-section text-center me-3'>
-                    <div>" . date("m", strtotime($app['appt_date'])) . "<br>" . date("Y", strtotime($app['appt_date'])) . "</div>
-                    <div class='fs-1'>" . date("d", strtotime($app['appt_date'])) . "</div>
-                    <div>" . strtoupper(date("D", strtotime($app['appt_date']))) . "</div>
-                </div>
-                <div class='flex-grow-1'>
-                    <h5>Doctor Consult</h5>
-                    <p>Booked for <span class='text-muted'>{$app['user_id']}</span></p>
-                    <p class='text-danger'>{$app['appt_time']}</p>
-                    
-                </div>
-                <div class='d-flex flex-column'>
-                    <a href='details.php' class='btn btn-custom mb-2'>Details</a>
-                    <button class='btn btn-custom'>Medicine/Mark as Completed</button>
-                </div>
+    foreach ($appointments_today as $app) {
+                if (!isset($link)) {
+    include("dbFunctions.php"); // Ensure this file sets up $link properly
+}
+
+// Query to fetch user data
+$user_id = 1; // Example user ID
+$query = "SELECT username FROM users WHERE user_id = $user_id";
+$result = mysqli_query($link, $query);
+
+if ($result) {
+    $user = mysqli_fetch_assoc($result); // Fetch a single row
+    $username = $user['username']; // Bind the username to the variable
+} else {
+    die("Query failed: " . mysqli_error($link));
+}
+
+                
+        
+        
+                echo "
+    </div>
+    <div class='container mt-4'>
+        <!-- Appointment Cards -->
+        <div class='appointment-card d-flex border rounded p-3 mb-3'>
+            <div class='date-section text-center me-3'>
+                <div>" . date("m", strtotime($app['appt_date'])) . "<br>" . date("Y", strtotime($app['appt_date'])) . "</div>
+                <div class='fs-1'>" . date("d", strtotime($app['appt_date'])) . "</div>
+                <div>" . strtoupper(date("D", strtotime($app['appt_date']))) . "</div>
+            </div>
+            <div class='flex-grow-1'>
+                <h5>Doctor Consult</h5>
+                <p>Booked for <span class='text-muted'>{$username}</span></p>
+                <p class='text-danger'>{$app['appt_time']}</p>
+            </div>
+            <div class='d-flex flex-column'>
+                <a href='details.php?appt_id={$app['appt_id']}&user_id={$app['user_id']}' class='btn btn-custom mb-3'>Details</a>
+                <a href='markComplete2.php?appt_id={$app['appt_id']}' class='btn btn-custom'>Medicine/Mark as Completed</a>
             </div>
         </div>
-        ";
-    }
-}
-?>
-</div>
     </div>
+";
+            }
+        }
+        
+        ?>
+    </div>
+</div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
