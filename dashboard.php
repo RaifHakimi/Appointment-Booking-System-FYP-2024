@@ -2,7 +2,9 @@
 <?php
 
 /**
- * File created by Raif
+ * File created by Raif\
+ * 
+ * Use to view dashboard for Patients
  */
 
 session_start();
@@ -90,7 +92,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] === null) {
         <a href="bookAppt.php" class="button">
             <i class="icon">📅</i> Book Appointment
         </a>
-        <a href="settings.php">
+        <a href="settings.php" class="button">
         <i class="settings">⚙️</i>
         </a>
     </div>

@@ -1,5 +1,8 @@
 <?php
 // Start the session
+/**Log out Functionality
+ * 
+ */
 session_start();
 
 // Unset all session variables

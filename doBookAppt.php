@@ -1,4 +1,7 @@
 <?php
+/** Creates the book appointment functionality *
+ * 
+ */
 session_start(); // Start the session
 
 // Database connection

@@ -3,6 +3,15 @@
 session_start();
 include("dbFunctions.php");
 
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'doctor') {
+  // Display an alert and redirect
+  echo "<script>
+      alert('Access Restricted. You must be logged in as a doctor to access this page.');
+      window.location.href = 'index.php';
+  </script>";
+  exit(); // Ensure no further code is executed
+}
+
 $query = "SELECT a.appt_id, a.appt_date, a.appt_time, a.medicine, a.user_id, u.username 
           FROM appointment a
           INNER JOIN users u ON a.user_id = u.user_id

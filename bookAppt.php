@@ -1,6 +1,9 @@
 <?php
 /**
  * File created by Raif
+ * 
+ * Use to book an appointment
+ * Used by PATIENTS to book an appointment.
  */
 ?>
 <!DOCTYPE html>

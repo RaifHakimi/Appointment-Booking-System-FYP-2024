@@ -1,6 +1,9 @@
 <?php
 /**
  * File created by Raif
+ * 
+ * This file displays the user's appointments.
+ * Used by patients to view their appointments.
  */
 
 include 'dbFunctions.php';
@@ -86,7 +89,9 @@ $result = $stmt->get_result();
     <a href="bookAppt.php" class="button">
       <i class="icon">📅</i> Book Appointment
     </a>
-    <i class="settings">⚙️</i>
+    <a href="settings.php" class="button">
+      <i class="settings">⚙️</i>
+    </a>
   </div>
 
   <!-- Main Content -->

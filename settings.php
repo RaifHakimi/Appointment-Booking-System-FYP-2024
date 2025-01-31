@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<!-- settings page for patient to view and edit their profile -->
 
 
 <?php
@@ -162,7 +162,7 @@ $link->close();
         <a href="bookAppt.php" class="button">
             <i class="icon">📅</i> Book Appointment
         </a>
-        <a href="settings.php">
+        <a href="settings.php" class="button">
             <i class="settings">⚙️</i>
         </a>
     </div>

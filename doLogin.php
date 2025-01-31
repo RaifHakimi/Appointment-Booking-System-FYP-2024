@@ -33,14 +33,14 @@ if (isset($_POST['phonenumber'])) {
             // Password is correct; store user info in session
             $_SESSION['user_id'] = $row['user_id'];
             $_SESSION['username'] = $row['username'];
-            $_SESSION['role'] = $row['role']
+            $_SESSION['role'] = $row['role'];
             $msg = "Login is successful!";
 
             if($row['role'] == 'admin') {
                 echo "<script>
                     alert('$msg');
                     window.open('newpage.php', '_blank');  // Opens new tab with newpage.php
-                    window.location.href = 'testrey.php';  // Redirects to welcome.php in the same tab
+                    window.location.href = 'dashboard.php';  // Redirects to welcome.php in the same tab
                   </script>";
             }
 
@@ -48,7 +48,7 @@ if (isset($_POST['phonenumber'])) {
                 echo "<script>
                     alert('$msg');
                     window.open('newpage.php', '_blank');  // Opens new tab with newpage.php
-                    window.location.href = 'testisaac.php';  // Redirects to welcome.php in the same tab
+                    window.location.href = 'docSchedule.php';  // Redirects to welcome.php in the same tab
                   </script>";
             }
 

@@ -1,7 +1,20 @@
 <!DOCTYPE html>
 <?php
+/** Used to display the doctor's schedule for the day.
+ * 
+ */
 session_start();
 include("dbFunctions.php");
+
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'doctor') {
+    // Display an alert and redirect
+    echo "<script>
+        alert('Access Restricted. You must be logged in as a doctor to access this page.');
+        window.location.href = 'index.php';
+    </script>";
+    exit(); // Ensure no further code is executed
+}
+
 
 // Fetch today's appointments using MySQLi
 $date = date("Y-m-d"); // Get today's date
@@ -67,17 +80,17 @@ if ($result) {
   <div class="navbar">
     <div class="logo">LOGO</div>
     <div class="nav-links">
-      <a href="dashboard.php">Home</a>
+      <a href="#">Patients</a>
       <div class="separator"></div>
       <a href="#" class="active">Appointments</a>
       <div class="separator"></div>
       <a href="#">Medication</a>
     </div>
-    <a href="bookAppt.php" class="button">
-      <i class="icon">📅</i> Book Appointment
+    
+    <a href="settings.php" class="button">
+        <i class="settings">⚙️</i>Settings
     </a>
-    <i class="settings">⚙️</i>
-  </div>
+    </div>
     <div class="container mt-5">
     <h3>Appointments for Today</h3>
     <div id="appointments-list">

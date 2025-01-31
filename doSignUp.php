@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <?php
+/** Sign up Functionality/ Assign role of Patient
+ * 
+ */
 session_start();
 $msg = "";
 

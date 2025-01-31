@@ -8,6 +8,15 @@ and open the template in the editor.
 session_start();
 include("dbFunctions.php");
 
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'doctor') {
+  // Display an alert and redirect
+  echo "<script>
+      alert('Access Restricted. You must be logged in as a doctor to access this page.');
+      window.location.href = 'index.php';
+  </script>";
+  exit(); // Ensure no further code is executed
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get the form data
     $appointment_id = intval($_POST['appointment_id']);

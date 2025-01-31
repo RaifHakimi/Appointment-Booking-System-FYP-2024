@@ -1,8 +1,21 @@
 <!DOCTYPE html>
 <?php
+/**
+ * 
+ */
+
 // Start the session and include database connection
 session_start();
 include("dbFunctions.php");
+
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'doctor') {
+    // Display an alert and redirect
+    echo "<script>
+        alert('Access Restricted. You must be logged in as a doctor to access this page.');
+        window.location.href = 'index.php';
+    </script>";
+    exit(); // Ensure no further code is executed
+}
 
 // Get the user_id and appt_id from the query string
 $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
@@ -113,10 +126,9 @@ try {
       <div class="separator"></div>
       <a href="#">Medication</a>
     </div>
-    <a href="bookAppt.php" class="button">
-      <i class="icon">📅</i> Book Appointment
+    <a href="settings.php" class="button">
+        <i class="settings">⚙️</i>Settings
     </a>
-    <i class="settings">⚙️</i>
   </div>
         <div class="container mt-5">
     <h2>Appointment Details</h2>

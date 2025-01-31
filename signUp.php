@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-
+<!-- 
+    This file contains the sign up form for the Sin Nam Medical Hall website.
+    It includes fields for first name, last name
+-->
 
 <html lang="en">
 
@@ -123,7 +126,9 @@
                     <div class="d-flex justify-content-start">
                         <label for="name1" class="form-label">Phone Number*</label>
                     </div>
-                    <input type="text" class="form-control text-border" id="name1" name="phoneNumber" placeholder="Enter phone number" required>
+                    <input type="text" class="form-control text-border" id="phoneNumber" name="phoneNumber" 
+           placeholder="Enter phone number" required pattern="\d{8}" 
+           title="Phone number must be exactly 8 digits.">
                 </div>
 
                 <!-- Email -->

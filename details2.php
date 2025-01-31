@@ -1,4 +1,7 @@
 <?php
+/**
+ * ?
+ */
 // Start the session and include database connection
 session_start();
 include("dbFunctions.php");

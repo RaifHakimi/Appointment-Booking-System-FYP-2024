@@ -3,6 +3,15 @@
 session_start();
 include("dbFunctions.php");
 
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'doctor') {
+  // Display an alert and redirect
+  echo "<script>
+      alert('Access Restricted. You must be logged in as a doctor to access this page.');
+      window.location.href = 'index.php';
+  </script>";
+  exit(); // Ensure no further code is executed
+}
+
 $appointment_id = $_GET['appt_id'] ?? null; // Get the appointment ID from the query string
 if (!$appointment_id) {
     die("Invalid appointment ID.");

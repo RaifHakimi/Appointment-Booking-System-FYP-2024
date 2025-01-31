@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <?php
+/**
+ * This file deletes an appointment record from the database/Replace with 1 to 0 etc
+ */
 include("dbFunctions.php");
 
 if (isset($_GET['appt_id'])) {
