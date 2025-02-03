@@ -40,7 +40,7 @@ if (isset($_POST['phonenumber'])) {
                 echo "<script>
                     alert('$msg');
                     window.open('newpage.php', '_blank');  // Opens new tab with newpage.php
-                    window.location.href = 'dashboard.php';  // Redirects to welcome.php in the same tab
+                    window.location.href = 'adminApptView.php';  // Redirects to welcome.php in the same tab
                   </script>";
             }
 
