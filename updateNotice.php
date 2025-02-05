@@ -1,4 +1,5 @@
 <?php
+session_start();
 include("dbFunctions.php");
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {

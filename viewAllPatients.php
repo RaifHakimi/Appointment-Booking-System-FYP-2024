@@ -1,6 +1,20 @@
+<?php
 /**
  * File created by Isaac
  */
+session_start();
+
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    // Display an alert and redirect
+    echo "<script>
+        alert('Access Restricted. You must be logged in as a admin to access this page.');
+        history.back();
+
+    </script>";
+    exit(); // Ensure no further code is executed
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 

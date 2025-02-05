@@ -1,6 +1,68 @@
+<?php
 /**
- * File created by Isaac
+ * This file fetches the patient details from the database
  */
+session_start();
+include 'dbFunctions.php';
+
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    // Display an alert and redirect
+    echo "<script>
+        alert('Access Restricted. You must be logged in as a admin to access this page.');
+        history.back();
+
+    </script>";
+    exit(); // Ensure no further code is executed
+}
+
+
+if (isset($_GET['user_id'])) {
+    $user_id = $_GET['user_id']; // Retrieve the user_id from the URL
+} else {
+    $user_id = null; // Default value if user_id is not set
+}
+
+try {
+    $sql = "SELECT * FROM users WHERE user_id = ?";
+    $stmt = $link->prepare($sql);
+    if (!$stmt) {
+        throw new Exception("Failed to prepare statement: " . $link->error);
+    }
+
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        // Fetch user data (assuming single row for the user)
+        $row = $result->fetch_assoc();
+
+        // Extract specific fields
+        $username = htmlspecialchars($row['username'] ?? '');
+        $gender = htmlspecialchars($row['gender'] ?? '');
+        $phonenumber = htmlspecialchars($row['phonenumber'] ?? '');
+        $email = htmlspecialchars($row['email'] ?? '');
+
+        $password = htmlspecialchars($row['password'] ?? '');
+        
+    } else {
+        echo "<p>No user found with ID: $user_id</p>";
+        $firstName = $lastName = ''; // Default empty values
+    }
+} catch (Exception $e) {
+    echo "<p>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
+    $firstName = $lastName = ''; // Default empty values
+}
+
+// Close the statement and connection
+$stmt->close();
+$link->close();
+
+
+
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <style>
@@ -81,31 +143,31 @@
             <!-- First Name -->
             <div class="mb-3">
                 <label for="firstName" class="form-label">First Name*</label>
-                <input type="text" class="form-control text-border" id="firstName" name="firstName" required>
+                <input type="text" class="form-control text-border" id="firstName" name="firstName"  value="<?php echo $username; ?>" required>
             </div>
 
             <!-- Last Name -->
             <div class="mb-3">
                 <label for="lastName" class="form-label">Last Name*</label>
-                <input type="text" class="form-control text-border" id="lastName" name="lastName" required>
+                <input type="text" class="form-control text-border" id="lastName" name="lastName"   value="<?php echo $gender; ?>" required>
             </div>
 
             <!-- Gender -->
             <div class="mb-3">
                 <label for="gender" class="form-label">Gender*</label>
-                <input type="text" class="form-control text-border" id="gender" name="gender" readonly>
+                <input type="text" class="form-control text-border" id="gender" name="gender"   value="<?php echo $gender; ?>"readonly>
             </div>
 
             <!-- Phone Number -->
             <div class="mb-3">
                 <label for="phoneNumber" class="form-label">Phone Number*</label>
-                <input type="text" class="form-control text-border" id="phoneNumber" name="phoneNumber" required>
+                <input type="text" class="form-control text-border" id="phoneNumber" name="phoneNumber"  value="<?php echo $phonenumber; ?>" required>
             </div>
 
             <!-- Email -->
             <div class="mb-3">
                 <label for="email" class="form-label">Email*</label>
-                <input type="text" class="form-control text-border" id="email" name="email" required>
+                <input type="text" class="form-control text-border" id="email" name="email"  value="<?php echo $email ?>" required>
             </div>
 
             <!-- Action Buttons -->
