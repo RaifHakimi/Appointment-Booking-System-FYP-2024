@@ -328,14 +328,14 @@ session_start();
 
     </script>
     <?php
-    echo "<pre>";
+    /**echo "<pre>";
     print_r($_SESSION); // Outputs session data
     echo "</pre>";
 
 
     echo "<pre>";
     print_r($_POST); // Outputs session data
-    echo "</pre>";
+    echo "</pre>"; */
     ?>
 </body>
 

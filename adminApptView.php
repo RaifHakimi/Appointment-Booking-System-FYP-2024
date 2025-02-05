@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'dbFunctions.php';
 
 
@@ -12,6 +13,16 @@ $stmt = $link->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();
 // Check if appointments exist
+
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    // Display an alert and redirect
+    echo "<script>
+        alert('Access Restricted. You must be logged in as a admin to access this page.');
+        history.back();
+
+    </script>";
+    exit(); // Ensure no further code is executed
+}
 
 
 ?>
@@ -128,9 +139,9 @@ $result = $stmt->get_result();
 <div class="navbar">
     <div class="logo">LOGO</div>
     <div class="nav-links">
-      <a href="#">Patients</a>
+      <a href="viewAllPatients.php">Patients</a>
       <div class="separator"></div>
-      <a href="#" class="active">Appointments</a>
+      <a href="adminApptView.php" class="active">Appointments</a>
       <div class="separator"></div>
       <a href="#">Medication</a>
     </div>

@@ -4,9 +4,9 @@
 session_start();
 $msg = "";
 
-echo "<pre>";
-print_r($_POST);  // This will show the data received from the form
-echo "</pre>";
+//echo "<pre>";
+//print_r($_POST);  // This will show the data received from the form
+//echo "</pre>";
 if (isset($_POST['phonenumber'])) {
 
     // Retrieve form data

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
             padding: 0;
             background-color: #f4f4f4;
         }
+
         header {
             background-color: #333;
             color: #fff;
@@ -20,28 +22,35 @@
             align-items: center;
             justify-content: space-between;
         }
+
         header .logo {
             font-size: 24px;
             font-weight: bold;
         }
+
         header nav {
             display: flex;
             gap: 20px;
         }
+
         header nav a {
             color: #fff;
             text-decoration: none;
             font-size: 18px;
         }
+
         header nav a:hover {
             text-decoration: underline;
         }
+
         .container {
             padding: 20px;
         }
+
         .search-bar {
             margin-bottom: 20px;
         }
+
         .search-bar input {
             width: 100%;
             padding: 10px;
@@ -49,11 +58,13 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
         .patient-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
         }
+
         .patient-card {
             background-color: #fff;
             border: 1px solid #ccc;
@@ -62,15 +73,18 @@
             text-align: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .patient-card h3 {
             margin: 0;
             font-size: 20px;
             color: #333;
         }
+
         .patient-card p {
             margin: 5px 0;
             color: #666;
         }
+
         .patient-card button {
             background-color: #b00;
             color: #fff;
@@ -80,6 +94,7 @@
             cursor: pointer;
             margin-top: 10px;
         }
+
         .patient-card button:hover {
             background-color: #900;
         }
@@ -87,16 +102,16 @@
     <div class="navbar">
         <div class="logo">LOGO</div>
         <div class="nav-links">
-            <a href="dashboard.php">Home</a>
+            <a href="viewAllPatients.php" class="active">Patients</a>
             <div class="separator"></div>
-            <a href="appointment.php">Appointments</a>
+            <a href="adminApptView.php">Appointments</a>
             <div class="separator"></div>
             <a href="medication.php">Medication</a>
         </div>
-        <a href="bookAppt.php" class="button">
+        <a href="adminApptView.php" class="button">
             <i class="icon">📅</i> Book Appointment
         </a>
-        <a href="settings.php">
+        <a href="settings.php" class="button">
             <i class="settings">⚙️</i>
         </a>
     </div>
@@ -111,7 +126,7 @@
             $dbUsername = "root";
             $dbPassword = "";
             $dbName = "sinnamdb";
-            
+
             $conn = new mysqli($servername, $dbUsername, $dbPassword, $dbName);
 
             // Check connection
@@ -144,5 +159,6 @@
             ?>
         </div>
     </div>
-</body>
+    </body>
+
 </html>

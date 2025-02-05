@@ -107,7 +107,7 @@ $notice = mysqli_fetch_assoc($result)['notice'] ?? 'No notices available.';
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
             src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBRk2GM65wSQsSEKPVwQJyzw6_oTgHELFo&q=01-101+Yishun+Street+71,+Block+729,+Singapore+760729"
-        </iframe>
+        ></iframe>
     </div>
 </div>
     

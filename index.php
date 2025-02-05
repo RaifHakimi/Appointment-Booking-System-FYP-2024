@@ -1,5 +1,49 @@
 
 
+<?php
+session_start();
+
+ // If no session role is set, stay on the index.php page (login/signup page)
+if(isset($_SESSION['role']) === false) {
+    
+    
+} else {
+  if ($_SESSION['role'] === 'patient') {
+    echo "<script>
+        setTimeout(function() {
+            window.location.href = 'dashboard.php'; // Redirect to patient dashboard
+        }, 2000); // Redirect after 2 seconds
+    </script>";
+    exit();
+} elseif ($_SESSION['role'] === 'admin') {
+    echo "<script>
+        setTimeout(function() {
+            window.location.href = 'adminApptView.php'; // Redirect to admin appointments view
+        }, 2000);
+    </script>";
+    exit();
+} elseif ($_SESSION['role'] === 'doctor') {
+    echo "<script>
+        setTimeout(function() {
+            window.location.href = 'docSchedule.php'; // Redirect to doctor schedule
+        }, 2000);
+    </script>";
+    exit();
+} else {
+    echo "<script>
+        setTimeout(function() {
+            window.location.href = 'index.php'; // Redirect to staff schedule
+        }, 2000);
+    </script>";
+    exit();
+}
+}
+
+
+?>
+
+
+
 
 <!DOCTYPE html>
 <!-- STARTING PAGE -->
