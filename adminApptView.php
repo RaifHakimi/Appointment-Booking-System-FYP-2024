@@ -23,6 +23,18 @@ $stmt1->execute();
 $result1 = $stmt1->get_result();
 // Check if appointments exist
 
+
+// After your closed_dates query
+$closedDates = [];
+if ($result1->num_rows > 0) {
+    while ($row = $result1->fetch_assoc()) {
+        $closedDates[] = [
+            'date' => $row['date'],
+            'message' => $row['message']
+        ];
+    }
+}
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     // Display an alert and redirect
     echo "<script>
@@ -237,10 +249,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 <div class="col-md-8">
 
 <?php 
-$closedDates = []; // Initialize as empty array
-if ($result->num_rows > 0) {
-    $closedDates = [];
-}
+
 
 $appointments = []; // Initialize as empty array
 
@@ -342,7 +351,7 @@ foreach ($closedDates as $cd) {
 
 <script>
 var bookedAppointments = <?php echo json_encode($bookedSlots); ?>;
-var closedDates = <?php echo json_encode($datesClosed); ?>;
+var closedDates = <?php echo json_encode($closedDates); ?>;
 </script>
     
 </div>
@@ -654,7 +663,7 @@ function updateModalCalendar() {
     
     let dayCount = 1;
 
-    // Create 5 rows of 7 columns each
+
     for (let row = 0; row < 6; row++) {
         const rowDiv = document.createElement('div');
         rowDiv.className = 'row g-2';
@@ -664,59 +673,73 @@ function updateModalCalendar() {
             const colDiv = document.createElement('div');
             colDiv.className = 'col';
 
-            // Determine if current cell should display a date
             if (dayCount <= daysInMonth) {
                 if ((row === 0 && cellIndex >= firstDayOfMonth) || row > 0) {
                     const dateButton = document.createElement('button');
                     dateButton.className = 'btn btn-outline-secondary btn-date';
                     dateButton.textContent = dayCount;
 
-                    // Disable past dates
-                    const currentDate = new Date();
-                    currentDate.setHours(0, 0, 0, 0);
+                    // Create proper Date object for this cell
                     const buttonDate = new Date(
                         modalCurrentDate.getFullYear(),
                         modalCurrentDate.getMonth(),
                         dayCount
                     );
 
-                    const isClosed = closedDates.some(cd => {
-    // If cd.date is a string, it works directly. If it's a Date object, we need to format it
-    const closedDateStr = cd.date instanceof Date 
-        ? formatDateToLocalString(cd.date) 
-        : cd.date;
-    return closedDateStr === buttonDate;
-});
-if (isClosed) {
-                        dateButton.classList.add('disabled-date');
-                    } 
+                    const buttonDateClosed = new Date(
+                        modalCurrentDate.getFullYear(),
+                        modalCurrentDate.getMonth(),
+                        dayCount + 1
+                    );
+
+                    // Format date to match PHP format (YYYY-MM-DD)
+                    const formattedButtonDate = buttonDateClosed.toISOString().split('T')[0];
+
+                    // Check if date is closed
+                    const closedDateInfo = closedDates.find(cd => cd.date === formattedButtonDate);
+
+                    // Disable past dates
+                    const currentDate = new Date();
+                    currentDate.setHours(0, 0, 0, 0);
                     if (buttonDate < currentDate) {
                         dateButton.classList.add('disabled-date');
-                    } else {
-
-                        
-
-// In the updateModalCalendar function, modify the dateButton click handler:
-    dateButton.addEventListener('click', () => {
-    document.querySelectorAll('#modalDateGrid .btn-date').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-    dateButton.classList.add('selected');
-    selectedModalDate = buttonDate;
-    
-    // Generate time slots based on selected date
-    generateTimeSlots(buttonDate);
-});
-
-                        
                     }
+
+                    // Style closed dates (only if not in past)
+                    if (closedDateInfo && buttonDate >= currentDate) {
+                        dateButton.classList.add('closed-date');
+                        dateButton.dataset.message = closedDateInfo.message;
+                    }
+
+                    dateButton.addEventListener('click', () => {
+                        // Remove previous selections
+                        document.querySelectorAll('#modalDateGrid .btn-date').forEach(btn => {
+                            btn.classList.remove('selected');
+                        });
+                        
+                        // Add selection to clicked date
+                        dateButton.classList.add('selected');
+
+                        // Handle closed dates
+                        if (closedDateInfo) {
+                            document.getElementById('timeSlotMessage').textContent = closedDateInfo.message;
+                            document.getElementById('timeSlotMessage').style.display = 'block';
+                            document.getElementById('timeSlots').style.display = 'none';
+                            return;
+                        }
+
+                        // Proceed with normal time slot generation
+                        selectedModalDate = buttonDate;
+                        generateTimeSlots(buttonDate);
+                    });
 
                     colDiv.appendChild(dateButton);
                     dayCount++;
-                } else {
-                    colDiv.classList.add('empty');
                 }
-            } else {
+            }
+            // ... rest of the code ...
+
+ else {
                 colDiv.classList.add('empty');
             }
 

@@ -29,16 +29,6 @@ $result = $stmt->get_result();
 
 // Check if appointments exist
 
-// if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-//     // Display an alert and redirect
-//     echo "<script>
-//         alert('Access Restricted. You must be logged in as a admin to access this page.');
-//         history.back();
-
-//     </script>";
-//     exit(); // Ensure no further code is executed
-// }
-
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     // Display an alert and redirect
     echo "<script>
@@ -48,6 +38,16 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     </script>";
     exit(); // Ensure no further code is executed
 }
+
+// if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+//     // Display an alert and redirect
+//     echo "<script>
+//         alert('Access Restricted. You must be logged in as a admin to access this page.');
+//         history.back();
+
+//     </script>";
+//     exit(); // Ensure no further code is executed
+// }
 ?>
 <html lang="en">
 
@@ -213,27 +213,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 <div class = "container mt-3">
 
-<!-- <div class="mb-4 d-flex justify-content-between align-items-center">
-  <input type="text" id="searchBar" placeholder="Search patient's name" />
-  <div id="searchClear" class="ms-2" style="cursor: pointer; display: none;">×</div>
-      </div> -->
 
-      <!-- <div class="mb-4 position-relative w-50">
-  <input type="text" id="searchBar" class="form-control" placeholder="Search patient's name" />
-  <div id="searchClear" class="position-absolute end-0 top-50 translate-middle-y me-2" style="cursor: pointer; display: none;">×</div>
-
-</div> -->
-
-
-<!-- Add this after the search bar div -->
-<!-- <div class="d-flex gap-2 mb-4">
-    <div class="position-relative ">
-        <input type="text" id="searchBar" class="form-control" placeholder="Search patient's name" />
-        <div id="searchClear" class="position-absolute end-0 top-50 translate-middle-y me-2" style="cursor: pointer; display: none;">×</div>
-    </div>
-    <button class="btn btn-secondary" id="closeDatesBtn">Close Dates</button>
-    <button class="btn btn-secondary" id="openDatesBtn">Open Dates</button>
-</div> -->
 
 <div class="d-flex gap-2 mb-4">
     
@@ -270,7 +250,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     <!-- Dates will be dynamically added here -->
                 <!-- </div> -->
                  <!-- Day headers row -->
+                  *Red are closed dates
     <div class="row g-2 day-header-row">
+        
         <div class="col day-header">Su</div>
         <div class="col day-header">Mo</div>
         <div class="col day-header">Tu</div>
@@ -306,12 +288,6 @@ $closedDates = []; // Initialize as empty array
           $closedDates[] = $row;
       }
   
-      // Sort appointments chronologically by date and time
-    //   usort($appointments, function ($a, $b) {
-    //       $dateTimeA = strtotime($a['appt_date'] . ' ' . $a['appt_time']);
-    //       $dateTimeB = strtotime($b['appt_date'] . ' ' . $b['appt_time']);
-    //       return $dateTimeA <=> $dateTimeB; // Ascending order
-    //   });
 
     usort($closedDates, function ($a, $b) {
         return strtotime($a['date']) <=> strtotime($b['date']); // Descending order
@@ -336,6 +312,8 @@ $closedDates = []; // Initialize as empty array
         //   $time12h = date('h:i A', $filterTime); // 12-hour format with AM/PM
 
           $patientName = $row['username'];
+          $type = $row['closed_type'];
+          $message = $row['message'];
   
           echo "
         
@@ -348,16 +326,17 @@ $closedDates = []; // Initialize as empty array
                     <div> " . htmlspecialchars($shortDay) . " </div>
                   </div>
                   <div class='flex-grow-1'>
-                    <h5>Doctor Consult</h5>
-                    <p>Booked for <span class='text-muted'>$patientName</span></p>
-                    <p>Dr. Ty </p>
+                    <h5>$type</h5>
+                    <p>Closed by <span class='text-muted'>$patientName</span></p>
+                    <p>$message</p>
                 </div>
                 <div class='d-flex flex-column'>
                 
-                <button class='btn btn-custom cancel-btn' 
+                <button class='btn btn-custom reopen-btn' 
                 >
-            Cancel
+            Reopen
         </button>
+        
                 </div>
               </div>
               
@@ -368,12 +347,7 @@ $closedDates = []; // Initialize as empty array
       echo "<p>No appointments found.</p>";
   }
 
-//   $datesClose = [];
-// foreach ($closedDates as $cd) {
-//     $datesClosed[] = [
-//         'date' => $cd['date']
-//     ];
-// }
+
 $datesClosed = [];
 foreach ($closedDates as $cd) {
     $date = new DateTime($cd['date']);
@@ -751,32 +725,31 @@ dateButton.addEventListener('click', () => {
     updateCalendar();
 });
 
-// Cancel Appointment Handler
+
+// Replace the existing cancel button handler with this
 document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('cancel-btn')) {
-        const appointmentId = e.target.dataset.appointmentId;
-        if (confirm('Are you sure you want to cancel this appointment?')) {
-            fetch('cancelAppointment.php', {
+    if (e.target.classList.contains('reopen-btn')) {
+        const card = e.target.closest('.appointment-card');
+        const date = card.dataset.date;
+        
+        if (confirm('Are you sure you want to reopen this date?')) {
+            fetch('reopen_dates.php', {  // Endpoint that sets visible=0
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    appt_id: appointmentId
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dates: [date] })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Appointment canceled successfully!');
+                    alert('Date reopened!');
                     location.reload();
                 } else {
-                    alert('Error: ' + (data.message || 'Failed to cancel appointment'));
+                    alert('Error: ' + (data.message || 'Reopen failed'));
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Failed to cancel appointment');
+                alert('Failed to reopen date');
             });
         }
     }
@@ -807,11 +780,7 @@ searchBar.addEventListener('input', (e) => {
 let closeModalCurrentDate = new Date();
 let selectedCloseDates = new Set();
 
-// Initialize close dates modal
-// document.getElementById('closeDatesBtn').addEventListener('click', () => {
-//     $('#closeDatesModal').modal('show');
-//     updateCloseModalCalendar();
-// });
+
 
 // To this vanilla JS implementation:
 document.getElementById('closeDatesBtn').addEventListener('click', () => {
@@ -870,17 +839,7 @@ function updateCloseModalCalendar() {
                     date + 1
                 );
                 const dateString = currentDate.toISOString().split('T')[0];
-                // const isAlreadyClosed = closedDates.some(cd => cd.date === dateString);
-
-//                 const isAlreadyClosed = closedDates.some(cd => {
-//     let cdDate = new Date(cd.date); // Ensure it's a Date object
-//     cdDate.setDate(cdDate.getDate()); // Add 1 day
-
-
-    
-//     const formattedCDDate = cdDate.toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
-//     return formattedCDDate === dateString;
-// });
+                
 
 const isAlreadyClosed = closedDates.some(cd => {
         // Compare dates using local timezone
