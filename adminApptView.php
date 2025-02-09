@@ -12,6 +12,15 @@ $sql = "SELECT appointment.*, users.username
 $stmt = $link->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();
+
+$sql = "SELECT closed_dates.*, users.username 
+        FROM closed_dates 
+        JOIN users ON closed_dates.user_id = users.user_id
+        WHERE closed_dates.visible = 1";
+
+$stmt1 = $link->prepare($sql);
+$stmt1->execute();
+$result1 = $stmt1->get_result();
 // Check if appointments exist
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -77,6 +86,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         .btn-date {
             width: 100%;
             height: 60px;
+            /* padding: 10%;
+            margin: 2%; */
         }
 
         .empty {
@@ -127,6 +138,19 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     color: white !important;
 }
 
+.day-header-row {
+    margin-bottom: 0.5rem;
+}
+
+.day-header {
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5rem;
+    color: #6c757d;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
 
   
 
@@ -143,7 +167,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
       <div class="separator"></div>
       <a href="adminApptView.php" class="active">Appointments</a>
       <div class="separator"></div>
-      <a href="#">Medication</a>
+      <a href="vacation.php">Vacation</a>
     </div>
     <a href="adminApptView.php" class="button">
       <i class="icon">📅</i> Book Appointment
@@ -154,7 +178,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   </div>
 
 
-<div class = "container mt-5">
+<div class = "container mt-3">
 
 <!-- <div class="mb-4 d-flex justify-content-between align-items-center">
   <input type="text" id="searchBar" placeholder="Search patient's name" />
@@ -182,10 +206,27 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         <div class="row">
             <!-- Date Picker -->
             <div>
-                <h4><b>Date</b></h4>
-                <div class="container" id="date-grid">
+                <!-- <h4><b>Date</b></h4> -->
+                <!-- <div class="container" id="date-grid"> -->
                     <!-- Dates will be dynamically added here -->
-                </div>
+                <!-- </div> -->
+                 <!-- Day headers row -->
+    <div class="row g-2 day-header-row">
+        <div class="col day-header">Su</div>
+        <div class="col day-header">Mo</div>
+        <div class="col day-header">Tu</div>
+        <div class="col day-header">We</div>
+        <div class="col day-header">Th</div>
+        <div class="col day-header">Fr</div>
+        <div class="col day-header">Sa</div>
+    </div>
+                <div class="row g-2" id="date-grid">
+    
+    <!-- Existing date grid rows... -->
+</div>
+<!-- <div class="container" id="date-grid"></div> -->
+
+                
             </div>
         </div>
     </div>
@@ -194,6 +235,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 <div class="col-md-8">
 
 <?php 
+$closedDates = []; // Initialize as empty array
+if ($result->num_rows > 0) {
+    $closedDates = [];
+}
+
+$appointments = []; // Initialize as empty array
+
     $today = strtotime(date('Y-m-d')); // Get today's timestamp
     if ($result->num_rows > 0) {
       $appointments = [];
@@ -276,6 +324,14 @@ foreach ($appointments as $appt) {
         'time' => date('H:i', strtotime($appt['appt_time']))
     ];
 }
+
+$datesClosed = [];
+foreach ($closedDates as $cd) {
+    $date = new DateTime($cd['date']);
+    $datesClosed[] = [
+        'date' => $date->format('Y-m-d') // Format as local date string
+    ];
+}
     
     // Close the connection
     // $link->close();
@@ -284,6 +340,7 @@ foreach ($appointments as $appt) {
 
 <script>
 var bookedAppointments = <?php echo json_encode($bookedSlots); ?>;
+var closedDates = <?php echo json_encode($datesClosed); ?>;
 </script>
     
 </div>
@@ -307,6 +364,16 @@ var bookedAppointments = <?php echo json_encode($bookedSlots); ?>;
                 <h5 id="modalMonthName"></h5>
                 <button id="modalNextMonth" class="btn btn-outline-secondary">›</button>
               </div>
+              
+              <div class="row g-2 day-header-row">
+        <div class="col day-header">Su</div>
+        <div class="col day-header">Mo</div>
+        <div class="col day-header">Tu</div>
+        <div class="col day-header">We</div>
+        <div class="col day-header">Th</div>
+        <div class="col day-header">Fr</div>
+        <div class="col day-header">Sa</div>
+    </div>
             </div>
           </div>
           <div class="row mb-4">
@@ -611,9 +678,21 @@ function updateModalCalendar() {
                         dayCount
                     );
 
+                    const isClosed = closedDates.some(cd => {
+    // If cd.date is a string, it works directly. If it's a Date object, we need to format it
+    const closedDateStr = cd.date instanceof Date 
+        ? formatDateToLocalString(cd.date) 
+        : cd.date;
+    return closedDateStr === buttonDate;
+});
+if (isClosed) {
+                        dateButton.classList.add('disabled-date');
+                    } 
                     if (buttonDate < currentDate) {
                         dateButton.classList.add('disabled-date');
                     } else {
+
+                        
 
 // In the updateModalCalendar function, modify the dateButton click handler:
     dateButton.addEventListener('click', () => {
