@@ -54,20 +54,23 @@ $notice = mysqli_fetch_assoc($result)['notice'] ?? 'No notices available.';
 <body>
     
     <!-- Navigation -->
-  <div class="navbar">
-    <div class="logo">LOGO</div>
-    <div class="nav-links">
-      <a href="dashboard.php">Home</a>
-      <div class="separator"></div>
-      <a href="#" class="active">Appointments</a>
-      <div class="separator"></div>
-      <a href="#">Medication</a>
-    </div>
-    <a href="bookAppt.php" class="button">
-      <i class="icon">📅</i> Book Appointment
-    </a>
-    <i class="settings">⚙️</i>
-  </div>
+    <div class="navbar">
+
+<div class="logo">LOGO</div>
+<div class="nav-links">
+    <a href="dashboard.php" >Home</a>
+    <div class="separator"></div>
+    <a href="appointment.php">Appointments</a>
+    <div class="separator"></div>
+    <a href="locateUs.php" class="active">Locate Us</a>
+</div>
+<a href="bookAppt.php" class="button">
+    <i class="icon">📅</i> Book Appointment
+</a>
+<a href="settings.php" class="button">
+<i class="settings">⚙️</i>
+</a>
+</div>
     
     <div class="container mt-5">
         <h2>Our Location</h2>

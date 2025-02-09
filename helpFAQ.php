@@ -147,7 +147,7 @@
     <div class="nav-links">
       <a href="dashboard.php">Home</a>
       <div class="separator"></div>
-      <a href="#" class="active">Appointments</a>
+      <a href="appointment.php" >Appointments</a>
       <div class="separator"></div>
       <a href="#">Medication</a>
     </div>

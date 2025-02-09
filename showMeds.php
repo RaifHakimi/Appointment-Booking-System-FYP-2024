@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <?php
+
+#ADMIN - TO VIEW ALL MEDICATIONS AND COMPLETED APPOINTMENTS PRESCRIBED TO PATIENTS
+
 session_start();
 include("dbFunctions.php");
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'doctor') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   // Display an alert and redirect
   echo "<script>
       alert('Access Restricted. You must be logged in as a doctor to access this page.');
@@ -19,26 +22,27 @@ $query = "SELECT a.appt_id, a.appt_date, a.appt_time, a.medicine, a.user_id, u.u
 $result = mysqli_query($link, $query);
 
 if (!$result) {
-    die("Error fetching completed appointments: " . mysqli_error($link));
+  die("Error fetching completed appointments: " . mysqli_error($link));
 }
 
 // Fetch appointments into an array
 $completed_appointments = [];
 while ($row = mysqli_fetch_assoc($result)) {
-    $completed_appointments[] = $row;
+  $completed_appointments[] = $row;
 }
 
 // Close the database connection
 mysqli_close($link);
 ?>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>ShowMeds</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="style.css">
-        
-        <style>
+
+<head>
+  <meta charset="UTF-8">
+  <title>ShowMeds</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
     .appointment-card {
       border: 1px solid #ddd;
       border-radius: 8px;
@@ -55,7 +59,7 @@ mysqli_close($link);
     .day-sect {
       font-weight: bold;
       color: red;
-      
+
     }
 
     .btn-custom {
@@ -73,65 +77,71 @@ mysqli_close($link);
       color: red !important;
     }
   </style>
-  
-    </head>
-    <body>
-        
-        <!-- Navigation -->
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
   <div class="navbar">
     <div class="logo">LOGO</div>
     <div class="nav-links">
-      <a href="dashboard.php">Home</a>
+      <a href="viewAllPatients.php">Patients</a>
       <div class="separator"></div>
-      <a href="#" class="active">Appointments</a>
+      <a href="adminApptView.php">Appointments</a>
       <div class="separator"></div>
-      <a href="#">Medication</a>
+      <a href="vacation.php">Vacation</a>
+      <div class="separator"></div>
+      <a href="showMeds.php" class="active">Completed</a>
     </div>
-    <a href="bookAppt.php" class="button">
+    <a href="adminApptView.php" class="button">
       <i class="icon">📅</i> Book Appointment
     </a>
-    <i class="settings">⚙️</i>
+    <a href="settings.php" class="button">
+      <i class="settings">⚙️</i>
+    </a>
   </div>
-        
-       <div class="container mt-4">
-        <h2>Completed Appointments</h2>
-        
-        <?php if (empty($completed_appointments)): ?>
-            <p>No completed appointments found.</p>
-        <?php else: ?>
-            <?php foreach ($completed_appointments as $app): ?>
-                <div class="container mt-4">
-                    <!-- Appointment Cards -->
-<div class="appointment-card d-flex border rounded p-3 mb-3">
-    <div class="date-section text-center me-3">
-        <div><?php echo date("m", strtotime($app['appt_date'])); ?><br><?php echo date("Y", strtotime($app['appt_date'])); ?></div>
-        <div class="fs-1"><?php echo date("d", strtotime($app['appt_date'])); ?></div>
-        <div><?php echo strtoupper(date("D", strtotime($app['appt_date']))); ?></div>
-    </div>
-    <div class="flex-grow-1">
-        <h5>Doctor Consult</h5>
-        <p>Booked for <span class="text-muted"><?php echo htmlspecialchars($app['username']); ?></span></p>
-        <p class="text-danger"><?php echo htmlspecialchars($app['appt_time']); ?></p>
-        <p><strong>Medicine:</strong> <?php echo htmlspecialchars($app['medicine'] ?? 'No medicine prescribed.'); ?></p>
-    </div>
-    <div class="d-flex flex-column">
-        <a href="details2.php?appt_id=<?php echo $app['appt_id']; ?>&user_id=<?php echo $app['user_id']; ?>" class="btn btn-custom mb-3">Details</a>
-        <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $app['appt_id']; ?>)" class="btn btn-danger">Delete</a>
-    </div>
-</div>
 
-<?php endforeach; ?>
-<?php endif; ?>
+  <div class="container mt-4">
+    <h2>Completed Appointments</h2>
 
-<script>
-    function confirmDelete(appt_id) {
-        if (confirm("Are you sure you want to delete this appointment?")) {
+    <?php if (empty($completed_appointments)): ?>
+      <p>No completed appointments found.</p>
+    <?php else: ?>
+      <?php foreach ($completed_appointments as $app): ?>
+        <div class="container mt-4">
+          <!-- Appointment Cards -->
+          <div class="appointment-card d-flex border rounded p-3 mb-3">
+            <div class="date-section text-center me-3">
+              <div><?php echo date("m", strtotime($app['appt_date'])); ?><br><?php echo date("Y", strtotime($app['appt_date'])); ?></div>
+              <div class="fs-1"><?php echo date("d", strtotime($app['appt_date'])); ?></div>
+              <div><?php echo strtoupper(date("D", strtotime($app['appt_date']))); ?></div>
+            </div>
+            <div class="flex-grow-1">
+              <h5>Doctor Consult</h5>
+              <p>Booked for <span class="text-muted"><?php echo htmlspecialchars($app['username']); ?></span></p>
+              <p class="text-danger"><?php echo htmlspecialchars($app['appt_time']); ?></p>
+              <p><strong>Medicine:</strong> <?php echo htmlspecialchars($app['medicine'] ?? 'No medicine prescribed.'); ?></p>
+            </div>
+            <div class="d-flex flex-column">
+              <a href="details2.php?appt_id=<?php echo $app['appt_id']; ?>&user_id=<?php echo $app['user_id']; ?>" class="btn btn-custom mb-3">Details</a>
+              <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $app['appt_id']; ?>)" class="btn btn-danger">Delete</a>
+            </div>
+          </div>
+
+        <?php endforeach; ?>
+      <?php endif; ?>
+
+      <script>
+        function confirmDelete(appt_id) {
+          if (confirm("Are you sure you want to delete this appointment?")) {
             window.location.href = "delete.php?appt_id=" + appt_id;
+          }
         }
-    }
-</script>
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-        
-    </body>
+      </script>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
 </html>

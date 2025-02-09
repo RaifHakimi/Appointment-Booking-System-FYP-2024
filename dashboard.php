@@ -13,14 +13,7 @@ session_start();
 print_r($_SESSION); // Outputs session data
 echo "</pre>";
 **/
-if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] === null) {
-    // Display an alert and redirect
-    echo "<script>
-        alert('You must log in to access this page.');
-        window.location.href = 'index.php';
-    </script>";
-    exit(); // Ensure no further code is executed
-}
+
 
 ?>
 
@@ -70,6 +63,24 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] === null) {
             /* Rounded corners for the color bar */
             position: relative;
         }
+        
+        .help-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: red;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease;
+    }
+
+    .help-button:hover {
+        background-color: darkred;
+    }
     </style>
 
 
@@ -87,7 +98,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] === null) {
             <div class="separator"></div>
             <a href="appointment.php">Appointments</a>
             <div class="separator"></div>
-            <a href="medication.php">Medication</a>
+            <a href="locateUs.php">Locate Us</a>
         </div>
         <a href="bookAppt.php" class="button">
             <i class="icon">📅</i> Book Appointment
@@ -125,6 +136,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] === null) {
         <!-- Duplicate appointment card for other dates -->
 
 
+<a href="helpFAQ.php" class="help-button">Get Help</a>
 
 
 

@@ -78,7 +78,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         Please arrive on time. If you need to reschedule, contact us in advance.
 
         Regards,  
-        Your Clinic Team
+        Your Clinic Team 
         ";
 
         $mail->Subject = $subject;

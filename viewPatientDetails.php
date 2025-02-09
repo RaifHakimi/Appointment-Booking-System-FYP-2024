@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file fetches the patient details from the database
  */
@@ -42,17 +43,33 @@ try {
         $gender = htmlspecialchars($row['gender'] ?? '');
         $phonenumber = htmlspecialchars($row['phonenumber'] ?? '');
         $email = htmlspecialchars($row['email'] ?? '');
-
         $password = htmlspecialchars($row['password'] ?? '');
-        
     } else {
         echo "<p>No user found with ID: $user_id</p>";
-        $firstName = $lastName = ''; // Default empty values
+        $username = ''; // Default empty value
     }
 } catch (Exception $e) {
-    echo "<p>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
-    $firstName = $lastName = ''; // Default empty values
+    echo "<p>Unable to fetch user details: " . $e->getMessage() . "</p>";
 }
+
+if (isset($_POST['toggle_role'])) {
+    $user_id = $_POST['user_id'];
+    $current_role = $_POST['current_role'];
+    $new_role = ($current_role === 'patient') ? 'doctor' : 'patient';
+
+    $update_role_sql = "UPDATE users SET role = ? WHERE user_id = ?";
+    $stmt = $link->prepare($update_role_sql);
+    $stmt->bind_param("si", $new_role, $user_id);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Role updated successfully!'); window.location.href = 'viewAllPatients.php';</script>";
+    } else {
+        echo "<p>Error updating role: " . $link->error . "</p>";
+    }
+
+    $stmt->close();
+}
+
 
 // Close the statement and connection
 $stmt->close();
@@ -66,66 +83,75 @@ $link->close();
 <!DOCTYPE html>
 <html lang="en">
 <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        header .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        header nav {
-            display: flex;
-            gap: 20px;
-        }
-        header nav a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 18px;
-        }
-        header nav a:hover {
-            text-decoration: underline;
-        }
-        .container {
-            padding: 20px;
-        }
-        .search-bar {
-            margin-bottom: 20px;
-        }
-        .search-bar input {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-    </style>
-    <div class="navbar">
-        <div class="logo">LOGO</div>
-        <div class="nav-links">
-            <a href="dashboard.php">Home</a>
-            <div class="separator"></div>
-            <a href="appointment.php">Appointments</a>
-            <div class="separator"></div>
-            <a href="medication.php">Medication</a>
-        </div>
-        <a href="bookAppt.php" class="button">
-            <i class="icon">📅</i> Book Appointment
-        </a>
-        <a href="settings.php">
-            <i class="settings">⚙️</i>
-        </a>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    header {
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    header .logo {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    header nav {
+        display: flex;
+        gap: 20px;
+    }
+
+    header nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    header nav a:hover {
+        text-decoration: underline;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    .search-bar {
+        margin-bottom: 20px;
+    }
+
+    .search-bar input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+</style>
+<div class="navbar">
+    <div class="logo">LOGO</div>
+    <div class="nav-links">
+        <a href="dashboard.php">Home</a>
+        <div class="separator"></div>
+        <a href="appointment.php">Appointments</a>
+        <div class="separator"></div>
+        <a href="medication.php">Medication</a>
     </div>
+    <a href="bookAppt.php" class="button">
+        <i class="icon">📅</i> Book Appointment
+    </a>
+    <a href="settings.php">
+        <i class="settings">⚙️</i>
+    </a>
+</div>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -137,37 +163,44 @@ $link->close();
 <body>
     <h2 class="text-center pt-4">Edit Patient Details</h2>
     <div class="container">
+        <form method="POST" class="btn-toggle-role">
+            <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
+            <input type="hidden" name="current_role" value="<?php echo $role; ?>">
+            <button type="submit" name="toggle_role" class="btn btn-primary">
+                <?php echo ($role === 'patient') ? 'Switch to Doctor' : 'Switch to Patient'; ?>
+            </button>
+        </form>
         <form id="patientForm">
             <input type="hidden" id="user_id" value="1"> <!-- Change dynamically or pass via URL -->
 
-            <!-- First Name -->
+            <!--Username-->
             <div class="mb-3">
-                <label for="firstName" class="form-label">First Name*</label>
-                <input type="text" class="form-control text-border" id="firstName" name="firstName"  value="<?php echo $username; ?>" required>
-            </div>
-
-            <!-- Last Name -->
-            <div class="mb-3">
-                <label for="lastName" class="form-label">Last Name*</label>
-                <input type="text" class="form-control text-border" id="lastName" name="lastName"   value="<?php echo $gender; ?>" required>
+                <label for="username" class="form-label">Username*</label>
+                <input type="text" class="form-control text-border" id="username" name="username" value="<?php echo $username; ?>" required>
             </div>
 
             <!-- Gender -->
             <div class="mb-3">
-                <label for="gender" class="form-label">Gender*</label>
-                <input type="text" class="form-control text-border" id="gender" name="gender"   value="<?php echo $gender; ?>"readonly>
+                <label class="form-label">Gender*</label>
+                <div>
+                    <input type="radio" id="male" name="gender" value="Male" <?php if ($gender == "Male") echo "checked"; ?>>
+                    <label for="male">Male</label>
+
+                    <input type="radio" id="female" name="gender" value="Female" <?php if ($gender == "Female") echo "checked"; ?>>
+                    <label for="female">Female</label>
+                </div>
             </div>
 
             <!-- Phone Number -->
             <div class="mb-3">
                 <label for="phoneNumber" class="form-label">Phone Number*</label>
-                <input type="text" class="form-control text-border" id="phoneNumber" name="phoneNumber"  value="<?php echo $phonenumber; ?>" required>
+                <input type="text" class="form-control text-border" id="phoneNumber" name="phoneNumber" value="<?php echo $phonenumber; ?>" required>
             </div>
 
             <!-- Email -->
             <div class="mb-3">
                 <label for="email" class="form-label">Email*</label>
-                <input type="text" class="form-control text-border" id="email" name="email"  value="<?php echo $email ?>" required>
+                <input type="text" class="form-control text-border" id="email" name="email" value="<?php echo $email ?>" required>
             </div>
 
             <!-- Action Buttons -->
@@ -175,19 +208,19 @@ $link->close();
                 <button type="submit" class="btn btn-success">Save Changes</button>
                 <a href="viewAllPatients.php" class="btn btn-danger ms-2">Cancel</a>
             </div>
+
         </form>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             const userId = document.getElementById("user_id").value;
 
             // Fetch patient details
             fetch(`fetchPatient.php?user_id=${userId}`)
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById("firstName").value = data.first_name;
-                    document.getElementById("lastName").value = data.last_name;
+                    document.getElementById("username").value = data.username;
                     document.getElementById("gender").value = data.gender;
                     document.getElementById("phoneNumber").value = data.phone_number;
                     document.getElementById("email").value = data.email;
@@ -196,16 +229,16 @@ $link->close();
         });
 
         // Handle form submission
-        document.getElementById("patientForm").addEventListener("submit", function (e) {
+        document.getElementById("patientForm").addEventListener("submit", function(e) {
             e.preventDefault();
 
             const formData = new FormData(this);
             formData.append("user_id", document.getElementById("user_id").value);
 
             fetch("updatePatient.php", {
-                method: "POST",
-                body: formData
-            })
+                    method: "POST",
+                    body: formData
+                })
                 .then(response => response.text())
                 .then(data => {
                     alert("Patient details updated successfully!");
@@ -216,4 +249,5 @@ $link->close();
     </script>
 
 </body>
+
 </html>

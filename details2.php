@@ -104,19 +104,23 @@ try {
 </head>
 <body>
     <!-- Navigation -->
-  <div class="navbar">
+    <div class="navbar">
     <div class="logo">LOGO</div>
     <div class="nav-links">
-      <a href="dashboard.php">Home</a>
+      <a href="viewAllPatients.php">Patients</a>
       <div class="separator"></div>
-      <a href="#" class="active">Appointments</a>
+      <a href="adminApptView.php">Appointments</a>
       <div class="separator"></div>
-      <a href="#">Medication</a>
+      <a href="vacation.php">Vacation</a>
+      <div class="separator"></div>
+      <a href="showMeds.php" >Completed</a>
     </div>
-    <a href="bookAppt.php" class="button">
+    <a href="adminApptView.php" class="button">
       <i class="icon">📅</i> Book Appointment
     </a>
-    <i class="settings">⚙️</i>
+    <a href="settings.php" class="button">
+      <i class="settings">⚙️</i>
+    </a>
   </div>
         <div class="container mt-5">
     <h2>Appointment Details</h2>

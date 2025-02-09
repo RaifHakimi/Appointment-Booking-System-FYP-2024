@@ -165,9 +165,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     <div class="nav-links">
       <a href="viewAllPatients.php">Patients</a>
       <div class="separator"></div>
-      <a href="adminApptView.php" class="active">Appointments</a>
+      <a href="adminApptView.php" class="active" >Appointments</a>
       <div class="separator"></div>
       <a href="vacation.php">Vacation</a>
+      <div class="separator"></div>
+      <a href="showMeds.php" >Completed</a>
     </div>
     <a href="adminApptView.php" class="button">
       <i class="icon">📅</i> Book Appointment
